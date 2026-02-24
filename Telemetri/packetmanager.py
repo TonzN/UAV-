@@ -53,25 +53,36 @@ class ResponsePacket(BaseModel): #standarisert packe format som skal benyttes fo
     tag: str | None = Field(None, description="Tag for internal filtering")
     date: str | None = Field(None, description="Date the packet was created")
 
-def validate_packet(data, packet_type) -> Packet:
+
+def validate_packet(packet, packet_type) -> Packet:
     try:
-        return packet_type(**json.loads(data.strip()))
+        if isinstance(packet, str):
+            return packet_type(**json.loads(packet.strip()))
+        elif isinstance(packet, dict):
+            return packet_type(**packet)
+        elif isinstance(packet, Packet):
+            return packet
+        elif isinstance(packet, ResponsePacket):
+            return packet
+        else:
+            raise ValueError("\nInvalid packet format")
     except Exception as e:
-        print(f"validate_packet->Error validating packet: {e}")
+        print(f"\n validate_packet->Error validating packet: {e}")
         return False
     
 #Example usage:
-test_packet = {"id": "drone1", "action": "takeoff", "data": {"altitude": 10}, "tag": "abc123"}
-test_packet2 = {"action": "takeoff", "data": {"altitude": 10}, "tag": "abc123"} # Missing id field, should be invalid
+test_packet = ResponsePacket(id="drone1", action="takeoff", data={"altitude": 10}, tag="abc123", date="2024-06-01T12:00:00Z") # Valid packet, formatert som ResponsePacket
+test_packet2 = {"v": 1, "action": "land", "data": {"altitude": 0}, "tag": "def456", "date": "2024-06-01T12:05:00Z"} # Missing 'id' field, should be invalids
+test_packet3 = {"v": 1, "id": "drone2", "action": "hover", "data": {"altitude": 5}, "tag": "ghi789", "date": "2024-06-01T12:10:00Z"} # Valid packet, formatert som dict
 
-validated_packet = validate_packet(json.dumps(test_packet), Packet)
+validated_packet = validate_packet(test_packet, ResponsePacket)
 if validated_packet:
-    print("test Packet 1 is valid:", validated_packet)
-else:    
-    print("Packet is invalid")
+    print(f"\n Validated packet: {validated_packet}")
 
-validated_packet2 = validate_packet(json.dumps(test_packet2), Packet)
+validated_packet2 = validate_packet(json.dumps(test_packet2), ResponsePacket)
 if validated_packet2:
-    print("test Packet 2 is valid:", validated_packet2)
-else:    
-    print("Packet 2 is invalid")
+    print(f"\n Validated packet: {validated_packet2}")
+
+validated_packet3 = validate_packet(test_packet3, Packet)
+if validated_packet3:
+    print(f"\n Validated packet: {validated_packet3}")
