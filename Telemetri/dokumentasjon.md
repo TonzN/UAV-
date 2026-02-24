@@ -1,27 +1,34 @@
 # Data formatering -> data pakker 
-#Example usage:
-test_packet = {"id": "drone1", "action": "takeoff", "data": {"altitude": 10}, "tag": "abc123"}
-test_packet2 = {"action": "takeoff", "data": {"altitude": 10}, "tag": "abc123"} # Missing id field, should be invalid
+Generer pakker med return packet schema klassen
+Pakker kan lages manuelt som dictionary med dette skal unngås i utgangspunktet 
+Packet klassen er en klasse som benyttes for å verifisere pakker fra klienten
 
-validated_packet = validate_packet(json.dumps(test_packet), Packet)
-if validated_packet:
-    print("test Packet 1 is valid:", validated_packet)
-else:    
-    print("Packet is invalid")
-    
-validated_packet2 = validate_packet(json.dumps(test_packet2), Packet)
-if validated_packet2:
-    print("test Packet 2 is valid:", validated_packet2)
-else:    
-    print("Packet 2 is invalid")
+#Example usage:
+    test_packet = ResponsePacket(id="drone1", action="takeoff", data={"altitude": 10}, tag="abc123", date="2024-06-01T12:00:00Z") # Valid packet, formatert som ResponsePacket
+    test_packet2 = {"v": 1, "action": "land", "data": {"altitude": 0}, "tag": "def456", "date": "2024-06-01T12:05:00Z"} # Missing 'id' field, should be invalids
+    test_packet3 = {"v": 1, "id": "drone2", "action": "hover", "data": {"altitude": 5}, "tag": "ghi789", "date": "2024-06-01T12:10:00Z"} # Valid packet, formatert som dict
+
+    validated_packet = validate_packet(test_packet, ResponsePacket)
+    if validated_packet:
+        print(f"\n Validated packet: {validated_packet}")
+
+    validated_packet2 = validate_packet(json.dumps(test_packet2), ResponsePacket)
+    if validated_packet2:
+        print(f"\n Validated packet: {validated_packet2}")
+
+    validated_packet3 = validate_packet(test_packet3, Packet)
+    if validated_packet3:
+        print(f"\n Validated packet: {validated_packet3}")
 
 Skal returnere:
-test Packet 1 is valid: v=1 id='drone1' action='takeoff' data={'altitude': 10} tag='abc123'
-validate_packet->Error validating packet: 1 validation error for Packet
-id
-  Field required [type=missing, input_value={'action': 'takeoff', 'da...': 10}, 'tag': 'abc123'}, input_type=dict]
-    For further information visit https://errors.pydantic.dev/2.11/v/missing
-Packet 2 is invalid
+     Validated packet: v=1 id='drone1' action='takeoff' data={'altitude': 10} tag='abc123' date='2024-06-01T12:00:00Z'
+
+    validate_packet->Error validating packet: 1 validation error for ResponsePacket
+    id
+    Field required [type=missing, input_value={'v': 1, 'action': 'land'... '2024-06-01T12:05:00Z'}, input_type=dict]
+        For further information visit https://errors.pydantic.dev/2.11/v/missing
+
+    Validated packet: v=1 id='drone2' action='hover' data={'altitude': 5} tag='ghi789' date='2024-06-01T12:10:00Z'
 
 # Request manager
     Alle serverside request funksjoner skal være her for seperasjon og strukturens skyld. 
