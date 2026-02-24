@@ -4,6 +4,7 @@ Pakker kan lages manuelt som dictionary med dette skal unngås i utgangspunktet
 Packet klassen er en klasse som benyttes for å verifisere pakker fra klienten
 
 #Example usage:
+
     test_packet = ResponsePacket(id="drone1", action="takeoff", data={"altitude": 10}, tag="abc123", date="2024-06-01T12:00:00Z") # Valid packet, formatert som ResponsePacket
     test_packet2 = {"v": 1, "action": "land", "data": {"altitude": 0}, "tag": "def456", "date": "2024-06-01T12:05:00Z"} # Missing 'id' field, should be invalids
     test_packet3 = {"v": 1, "id": "drone2", "action": "hover", "data": {"altitude": 5}, "tag": "ghi789", "date": "2024-06-01T12:10:00Z"} # Valid packet, formatert som dict
