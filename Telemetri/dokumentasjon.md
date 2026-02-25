@@ -22,6 +22,7 @@ Packet klassen er en klasse som benyttes for å verifisere pakker fra klienten
         print(f"\n Validated packet: {validated_packet3}")
 
 Skal returnere:
+
      Validated packet: v=1 id='drone1' action='takeoff' data={'altitude': 10} tag='abc123' date='2024-06-01T12:00:00Z'
 
     validate_packet->Error validating packet: 1 validation error for ResponsePacket

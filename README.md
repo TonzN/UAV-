@@ -14,4 +14,6 @@ Atmega/Arduino:
 
 # Python
     snakecase: variabler, funksjoner
-    camelcase: klasser
+    camelcase: Klasser
+    const: UPPERCASE
+    globals: UPPERCASE
