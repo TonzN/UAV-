@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import json
 
 """Schema for the server module 
+   !!!! Må ENDRES TIL MAVLINK !!!
    This module contains the data classes and models used in the server module.
    It includes the Packet class, which is used to represent packets of data sent
    between the server and clients
